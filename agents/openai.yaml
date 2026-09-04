@@ -1,0 +1,4 @@
+interface:
+  display_name: "Quiz Studio"
+  short_description: "Build evidence-aware, editable personality quiz sites"
+  default_prompt: "Create an editable, mobile-first personality quiz for my topic using the shared config, workbench, scoring checks, and visual QA flow."

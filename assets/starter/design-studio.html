@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>人格测试工作台</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="studio">
+      <aside class="studio-sidebar">
+        <h1>人格测试工作台</h1>
+        <p>右侧就是正式页本体。选择、拖动或改数值会直接写入同一份草稿配置；刷新、导出与重新打开都会保留。</p>
+        <div class="studio-group">
+          <label class="studio-label" for="studio-page">页面</label>
+          <select id="studio-page" class="studio-control">
+            <option value="cover">封面</option><option value="quiz">题目</option><option value="result">结算页</option><option value="share">分享卡</option>
+          </select>
+          <label class="studio-label" for="studio-question">题目</label>
+          <select id="studio-question" class="studio-control"></select>
+          <label class="studio-label" for="studio-result">结果</label>
+          <select id="studio-result" class="studio-control"></select>
+          <label class="studio-label" for="canvas-height">当前页面长度</label>
+          <input id="canvas-height" class="studio-control" type="number" min="300" step="10">
+        </div>
+        <div class="studio-group">
+          <span class="studio-label">全局文案</span>
+          <label><span class="studio-label">项目标题</span><input id="project-title" class="studio-control" type="text"></label>
+          <label><span class="studio-label">免责声明</span><textarea id="project-disclaimer" class="studio-control" rows="3"></textarea></label>
+          <label><span class="studio-label">当前题目路标</span><input id="question-route" class="studio-control" type="text"></label>
+          <label><span class="studio-label">当前结果名称</span><input id="result-name" class="studio-control" type="text"></label>
+          <label><span class="studio-label">当前结果副标题</span><input id="result-role" class="studio-control" type="text"></label>
+          <label><span class="studio-label">当前结果长评</span><textarea id="result-summary" class="studio-control" rows="5"></textarea></label>
+        </div>
+        <div class="studio-group">
+          <label class="studio-label" for="theme-preset">视觉预设</label>
+          <select id="theme-preset" class="studio-control">
+            <option value="editorial-paper">编辑纸感</option><option value="bright-pop">明亮流行</option><option value="quiet-film">安静电影</option><option value="mono-poster">黑白海报</option>
+          </select>
+          <div id="palette-controls"></div>
+          <label class="studio-label" for="display-font">展示字体</label>
+          <select id="display-font" class="studio-control"><option value="system-black">系统黑体</option><option value="system-serif">系统衬线</option><option value="system-rounded">系统圆体</option></select>
+          <label class="studio-label" for="body-font">正文字体</label>
+          <select id="body-font" class="studio-control"><option value="system-sans">系统无衬线</option><option value="system-serif">系统衬线</option></select>
+          <div class="studio-control--pair">
+            <label><span class="studio-label">全局字号</span><input id="type-scale" class="studio-control" type="number" min=".6" max="2.5" step=".05"></label>
+            <label><span class="studio-label">圆角</span><input id="theme-radius" class="studio-control" type="number" min="0" max="80" step="1"></label>
+          </div>
+          <label><span class="studio-label">全局字距 (em)</span><input id="theme-tracking" class="studio-control" type="number" min="-.08" max=".2" step=".01"></label>
+          <label class="studio-label" for="theme-effect">轻量效果</label>
+          <select id="theme-effect" class="studio-control"><option value="soft">柔和阴影</option><option value="none">无阴影</option><option value="hard">硬阴影</option></select>
+        </div>
+        <div class="studio-group">
+          <span class="studio-label">图层（正式页上也可拖动）</span>
+          <div id="layer-list" class="layer-list"></div>
+        </div>
+        <div id="inspector" class="studio-group"></div>
+        <div class="studio-group studio-actions">
+          <button id="export-config" type="button">导出配置</button>
+          <label class="secondary" for="import-config">导入配置<input id="import-config" type="file" accept="application/json"></label>
+          <button id="reset-draft" class="secondary" type="button">恢复模板</button>
+        </div>
+        <div id="studio-status" class="studio-status" aria-live="polite"></div>
+      </aside>
+      <section class="studio-preview" aria-label="正式页预览"><iframe id="formal-preview" title="正式页预览" src="index.html?studio=1"></iframe></section>
+    </main>
+    <script src="quiz-config.js"></script>
+    <script src="quiz-core.js"></script>
+    <script src="studio.js"></script>
+  </body>
+</html>
