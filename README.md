@@ -1,33 +1,50 @@
 # Quiz Studio
 
-**An open, model-agnostic Skill for building mobile-first personality, archetype, role-match, and fandom quizzes that people can actually edit.**
+[English](#english) · [快速开始](#快速开始) · [贡献](CONTRIBUTING.md)
 
-[中文说明](#中文说明) · [Quick start](#quick-start) · [Architecture](#architecture) · [Contributing](CONTRIBUTING.md)
+> 一个面向移动端人格、角色匹配、内容互动与粉丝向测试的开源 Skill 和无框架 starter。它帮助人和 AI 把“想做一个测试”变成可编辑、可验证、可发布的网页；不把娱乐测试包装成心理诊断。
 
-> Quiz Studio is for entertainment, reflection, education, and creative engagement. It is not a clinical diagnostic instrument and must not claim to diagnose real people.
+## 中文说明
 
-## Why this exists
+做一个测试，难的通常不只是写几道题。你要决定结果是什么、题目怎样区分结果、手机上每一行字和每一张图放在哪里、用户改过的位置怎样准确出现在正式页，以及结果图能不能真的保存。
 
-Most quiz prototypes fail in a predictable way: the copy, weights, visual layout, editor preview, public page, and exported share image gradually become different products. A creator moves something in an editor; the formal page remains wrong. A result seems plausible by eye; the scoring picks a different role. A download button fires but nobody can save the image.
+Quiz Studio 把这些环节放进一套很小的代码和协作流程里。它不替你决定主题、文案或审美；你仍然需要提供方向、题目、素材和审核。它做的是让 AI、创作者和代码使用同一份配置协作，少在“工作台是对的、正式页却不对”这种问题上来回消耗。
 
-Quiz Studio makes those failure modes explicit and gives an AI agent or developer a small, reusable production path.
+### 它怎样实现
 
-## What you get
+- **一份配置。** `quiz-config.js` 同时驱动正式答题页、结果页、分享图和工作台草稿。工作台通过 iframe 和 `postMessage` 操作正式渲染器，不维护另一套长得相似的预览。
+- **页面是可调的图层。** 文字行、图片、矢量小图、选项、页脚和页面高度都有独立配置。改页面长度不会顺带缩放人物图；红蓝字也可以分别对齐和移动。
+- **计分是可检查的。** 题目答案和结果画像都用显式维度与向量表示；starter 提供校准路径、并列规则和随机模拟，帮助发现“看起来像 A，最后却总算成 B”或根本到不了的结果。
+- **发布前验证真实交互。** starter 会检查配置结构和计分路径；流程还要求按实际手机宽度截图，并验证返回上一题、选项切换、保存结果图、音乐开关等运行时行为。
+- **导出不只是假按钮。** 结果图使用 Canvas 生成可见预览，再提供用户主动点击的下载入口；素材跨域或浏览器限制会有可见的降级提示。
 
-| Capability | What it means in practice |
+技术上，它只使用 HTML、CSS、JavaScript、Python 和 Node 标准库：原生 DOM/CSS、Pointer Events、Canvas、localStorage 与 `postMessage`。不需要指定模型、前端框架或云服务，因此可以和 Codex、Claude Code、Cursor、Gemini、ChatGPT 或人工开发流程一起使用。
+
+### 这个项目希望帮你省掉什么
+
+这是从一次实际的移动端测试项目中整理出来的。我们把反复踩到的坑写成了工作流和故障图谱：
+
+- 不用把工作台当成另一套页面；正式页就是工作台预览的对象。
+- 不因一个局部遮挡就全局重排已经确认的构图。
+- 不把透明 PNG/SVG 的外框误当作实际画面范围。
+- 不让结果页高度、人物尺寸、选项区域和页脚绑在一起。
+- 不把“结构校验通过”误说成“手机上看起来没问题”。
+
+如果你已经想好了主题、结果类型、题目方向，并能提供或确认文本、图片、logo、音乐等素材，这个 Skill 可以帮助你更快地完成提问、计分、排版、调试和上线前验收。需要多轮审美协调的部分仍然需要人来判断；它的目标是让这种协调发生在一份可追踪、可导出、可复现的配置上。
+
+### 案例：一个移动端角色匹配测试
+
+下面的案例使用 Quiz Studio 的同一配置、工作台和截图验收流程制作。图片用于展示页面结构和编辑方式，不构成对其中真实人物的心理判断，也不授予案例素材的再使用权。
+
+| 封面 | 题目页 |
 | --- | --- |
-| **One source of truth** | A versioned config drives the workbench, formal quiz, result page, share card, exported PNG, and draft cache. |
-| **Real WYSIWYG editing** | The workbench embeds the actual formal renderer in an iframe. It does not draw a look-alike preview. |
-| **Every visible element is ownable** | Edit copy, per-line text, title, result summaries, image/vector positions, width, height, scale, z-index, type size, line height, tracking, color, effects, page height, and asset paths. |
-| **Aesthetic range without a design dependency** | Four CSS-only presets, native color inputs, font-stack switches, global type scale/tracking, radius, borders, and light effects; owners can still bring their own PNG/SVG/audio. |
-| **Mobile-first layout rules** | Page height, option area, footer, and art are independent. A taller page does not silently resize, hide, or pin an image. |
-| **Explainable scoring** | Observable dimensions, explicit answer vectors, result profiles, named calibration cases, deterministic tie behavior, and distribution simulation. |
-| **Copy and source discipline** | A source/copy ledger prevents a role-match game from inventing real-person psychology or presenting fan inference as fact. |
-| **Export that fails visibly** | Share-card PNG rendering produces a preview and a user-clickable download link. Cross-origin image failures are explained instead of swallowed. |
-| **Portable by design** | Plain Markdown, HTML, CSS, JavaScript, Python, and Node standard library. No paid model, UI SDK, cloud service, or frontend framework is required. |
-| **A diagnosis atlas** | The common editor/render/export/scoring failures are indexed by symptom, root cause, evidence, and smallest safe fix. |
+| ![案例封面](assets/examples/hua-shao2/cover.png) | ![案例题目页](assets/examples/hua-shao2/questions.png) |
 
-## Quick start
+| 人物结果页 | 分享结果图 |
+| --- | --- |
+| ![案例人物结果页](assets/examples/hua-shao2/results.png) | ![案例分享结果图](assets/examples/hua-shao2/share-cards.png) |
+
+## 快速开始
 
 ```bash
 git clone https://github.com/Yaowon/quiz-studio.git
@@ -38,126 +55,73 @@ node scripts/validate-persona-quiz.mjs /absolute/path/my-quiz
 python3 -m http.server 4173 --directory /absolute/path/my-quiz
 ```
 
-Open `http://localhost:4173/design-studio.html`.
+打开 `http://localhost:4173/design-studio.html`。工作台草稿只保存在浏览器本地；确认排版后，导出 JSON，再把确认版本写回 `quiz-config.js` 后发布。
 
-The workbench saves drafts only in browser local storage. Export a JSON config for review; copy it into `quiz-config.js` only after the owner approves the change.
+建议的协作顺序：
 
-## Architecture
+1. 说明用途、受众、结果类型、内容来源、边界、审核人、素材版权、部署和数据规则。
+2. 先定义可观察的区分维度，再写题目和结果文案；不要反过来用结果名硬凑题目。
+3. 为每道题记录它区分什么行为、每个选项怎样赋分，以及为什么。
+4. 先跑校准路径和模拟，再开始视觉排版。
+5. 在实际手机宽度逐页截图；发现问题时只改被点名的图层，并保留其他已确认的位置。
+6. 最后分别确认结构、计分、视觉、交互、素材权利和隐私，而不是把它们混成一次“看起来没问题”。
 
-```text
-quiz-config.js
-       │
-       ├── formal quiz renderer ── answer flow / result page
-       ├── embedded workbench ─── select / drag / inspect / style
-       ├── share-card renderer ── preview / user-clickable PNG download
-       └── local draft + import/export JSON
-```
+详细的 agent 协作说明在 [SKILL.md](SKILL.md)。设计与工作台架构、题目调研、计分、故障排查、QA 和模型兼容性说明在 [references/](references/)。
 
-The starter deliberately uses native DOM/CSS, Pointer Events, `postMessage`, local storage, Canvas, and standard inputs.
+## 范围与限制
 
-- [GrapesJS](https://github.com/GrapesJS/grapesjs) is a strong general template builder with blocks, style, layers, and asset management, but is too broad when a product only needs a fixed family of portrait-format quiz pages.
-- [Craft.js](https://github.com/prevwong/craft.js) is the right escalation path for a React product that needs a custom component-tree editor and serialized state.
-- [tldraw](https://github.com/tldraw/tldraw/blob/main/LICENSE.md) is an infinite-canvas SDK with a production license path; it is not a no-conditions default for an open skill.
-- [html2canvas](https://github.com/niklasvh/html2canvas) recreates a DOM representation rather than taking a native screenshot and is constrained by cross-origin assets, so it is not the export source of truth.
+- 这是娱乐、内容互动、教育和反思工具，不是临床或心理诊断工具。
+- AI 生成图适合探索风格；涉及准确文字、logo、人物、数字和锁定布局的最终资产，优先使用用户提供或单独确认的素材。
+- 公开发布前，项目拥有者需要确认肖像、音乐、商标、引用、素材、统计和部署合规。
+- 手机浏览器不能被强制自动播放有声音乐；应默认静音，并让用户主动开启。
+- Canvas 导出受跨域规则限制；最终图片最好与页面放在同一项目或明确配置 CORS。
 
-The full decision record is in [references/open-source-landscape.md](references/open-source-landscape.md).
-
-## Workflow for agents and teams
-
-1. Establish the boundary, audience, outcome types, source corpus, copy owner, assets, target width, hosting, and privacy needs.
-2. Define 4–8 observable dimensions and source-backed result profiles.
-3. Make a question ledger before final copy: scenario, behavior, answer task, scoring vector, and sensitive wording.
-4. Add calibration cases and test simulation before visual polish.
-5. Use the workbench to approve each page, each result, and each share card on a real mobile-sized viewport.
-6. Ship only after schema, scoring, visual, runtime, and rights/privacy checks all pass.
-
-`SKILL.md` contains the agent workflow. Detailed references cover [intake and research](references/intake-and-research.md), [scoring](references/scoring.md), [architecture and workbench](references/architecture-and-workbench.md), [known failure modes](references/failure-atlas.md), [QA and release](references/qa-and-release.md), and [model portability](references/model-portability.md).
-
-## Compatibility
-
-Use this repository with Codex, Claude Code, Cursor, Gemini, ChatGPT, another coding agent, or a human developer:
-
-- If the environment supports tools and a browser, run the starter and complete the QA matrix.
-- If it supports file editing only, generate the project and clearly label browser/export checks as unverified.
-- If it supports chat only, use `SKILL.md` plus the reference Markdown files as a product brief and hand the generated config/spec to a developer.
-
-Do not claim a UI test happened if the agent only performed static validation.
-
-## Included starter
-
-```text
-assets/starter/
-├── index.html             # formal quiz
-├── design-studio.html     # live workbench
-├── quiz-config.js         # shared config and demo content
-├── quiz-core.js           # validation, scoring, simulation
-├── quiz-runtime.js        # formal renderer, interaction, share-card export
-├── studio.js              # workbench controls and iframe synchronization
-└── styles.css             # portable visual system
-```
-
-The included `scripts/validate-persona-quiz.mjs` checks config shape, duplicate IDs, scoring test cases, simulation coverage, JavaScript syntax, and required workbench/runtime contracts. It is not a substitute for visual QA.
-
-## Scope and limits
-
-- User-provided or separately generated transparent images are safer than AI-generated images containing exact logos, lettering, or layout.
-- Owners must confirm asset, portrait, music, trademark, source, and analytics rights before publishing.
-- Browsers cannot be forced to start audible music automatically. Start muted/off and use an accessible user-controlled toggle.
-- Remote images need CORS permission for Canvas export. Store final assets in the same project when possible.
+欢迎贡献新的风格预设、布局层类型、校准用例、故障复盘和不同模型的使用记录。请先阅读 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
 ---
 
-# 中文说明
+<a id="english"></a>
 
-**Quiz Studio 是一个开源、模型无关的 Skill：用来制作任何主题的移动端人格、角色匹配、原型或粉丝向测试，并且让用户真的能自己改。**
+# English
 
-它适用于娱乐、内容互动、品牌原型与自我反思；不适用于临床人格诊断，也不能把少量内容、剧情或观察包装成对真实人物的完整心理结论。
+Quiz Studio is an open-source Skill and framework-free starter for mobile-first personality, role-match, fandom, and content-interaction quizzes. It helps a creator and an AI turn an idea into an editable, testable, publishable web quiz. It is not a psychological or clinical diagnostic tool.
 
-## 它解决的不是“生成几个题”，而是这些常见事故
+Building a quiz is not only about writing questions. Someone still needs to decide the outcomes, provide the copy and assets, review the tone, and make aesthetic calls. Quiz Studio keeps the AI, the editor, and the production page working from the same configuration, so those decisions do not get lost between a workbench and a published page.
 
-- 工作台里排得对，正式页位置却错；
-- 红字、蓝字和背景字被锁成一块，不能单独移动；
-- 调页面长度后，选项、页脚和人物图跟着互相打架；
-- 透明 PNG 的空白边缘被误判为碰撞，导致图片被挪到错误位置；
-- 用户改好的坐标被刷新、快照参数或全局重排覆盖；
-- 题目看上去像某种人格，最终却算到完全不相干的结果；
-- “保存图片”按钮看似点了，移动端和网页端却没有任何可保存内容；
-- 模型把娱乐测试写成了貌似有医学依据的人格诊断。
+## How it works
 
-## 核心优势
+- `quiz-config.js` is the shared source for the formal renderer, result page, share-card exporter, and workbench draft.
+- The workbench embeds the formal renderer in an iframe and updates it with `postMessage`; it is not a separate look-alike preview.
+- Text lines, media, small SVG scenes, options, footer, and page height are independent layers. A page-height change does not resize a portrait or pin the options.
+- Explicit answer vectors, result profiles, calibration paths, tie behavior, and simulation make scoring inspectable before visual polish.
+- The starter uses plain HTML, CSS, JavaScript, Python, and Node standard libraries: native DOM/CSS, Pointer Events, Canvas, local storage, and `postMessage`. No specific model, UI framework, or cloud host is required.
 
-1. **一个配置，所有页面共用。** 工作台、正式页、结果页、分享卡、导出 PNG 与草稿缓存都读取同一份版本化配置。
-2. **工作台直接嵌入正式页。** 不是两套 UI；右侧预览就是用户最终看到的渲染器。
-3. **文字、图片、矢量小图、按钮和页高都能编辑。** 支持拖动、数值微调、层级、缩放、旋转、字体、字号、行高、字距、颜色和效果。
-4. **视觉系统不是固定模板。** 内置编辑纸感、明亮流行、安静电影、黑白海报四种轻量 CSS 风格；可用原生色轮、字体栈、全局字号/字距、边框、圆角和阴影继续调。
-5. **计分可解释、可测试。** 每个答案都有权重，结果有画像向量，写入明确的测试路径，并通过随机模拟检查是否存在“隐藏角色”。
-6. **把真实踩坑写成故障图谱。** 不再凭感觉乱挪位置：先看症状、根因、证据，再做最小安全修复。
-7. **结果图可以被真实验收。** 先生成可见预览，再给用户主动点击下载；跨域素材失败会告诉你原因。
-8. **不绑模型、不绑云。** 纯 HTML/CSS/JS/Python/Node 标准库，Codex、Claude、Cursor、Gemini、ChatGPT 或人工开发者都能接手。
+The repository also records practical failure modes: stale workbench configs, copied renderers, transparent image padding mistaken for content, global fixes that break approved layouts, hidden results, and export buttons that do not produce a downloadable image.
 
-## 最小使用方式
+## Use it when
+
+You have a direction, result types, question ideas, and enough approved copy or assets to make decisions. The Skill can guide intake, scoring, layout, debugging, and release checks. It does not replace editorial judgment or art direction; it makes that collaboration more traceable and easier to repeat.
 
 ```bash
+git clone https://github.com/Yaowon/quiz-studio.git
+cd quiz-studio
 python3 scripts/create-project.py /absolute/path/my-quiz
 node scripts/validate-persona-quiz.mjs /absolute/path/my-quiz
 python3 -m http.server 4173 --directory /absolute/path/my-quiz
 ```
 
-打开 `http://localhost:4173/design-studio.html`，在工作台中调整后导出 JSON。确认无误再合并回 `quiz-config.js` 并发布。
+Open `http://localhost:4173/design-studio.html`, export the approved JSON configuration, merge it into `quiz-config.js`, then publish.
 
-## 推荐的协作顺序
+## Scope and limits
 
-1. 明确测试目的、边界、受众、结果类型、内容来源、文案审核人、素材版权、部署与数据规则。
-2. 先定义 4–8 个可观察维度，再写每个角色/结果的证据和差异。
-3. 题目先写进题目账本：场景、区分什么行为、回答方式、赋分向量和敏感风险。
-4. 先测赋分与结果覆盖，再做视觉。
-5. 每张封面、题目、结果页和分享卡都在真实手机尺寸下截图验收。
-6. 只有结构、赋分、视觉、交互、版权与隐私都通过，才叫完成。
+- For entertainment, education, reflection, and creative engagement; not for clinical diagnosis.
+- Use user-supplied or separately approved final assets for exact lettering, logos, likenesses, numbers, or locked layouts.
+- Asset rights, privacy, analytics, hosting, and publication compliance remain the project owner's responsibility.
+- Audible autoplay is not reliable on mobile; start muted and let users opt in.
+- Canvas export needs same-origin or CORS-enabled images.
 
-## 开源参与
-
-欢迎提交新的风格预设、布局层类型、测试用例、故障复盘和不同模型的使用记录。请先阅读 [CONTRIBUTING.md](CONTRIBUTING.md)。
+Contributions are welcome: style presets, layer types, calibration cases, failure reports, and notes on using the Skill with different models. Read [CONTRIBUTING.md](CONTRIBUTING.md) first.
 
 ## License
 
-[MIT](LICENSE)。使用者自行负责题材来源、肖像、音乐、商标、分析统计与部署合规。
+[MIT](LICENSE).
