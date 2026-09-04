@@ -66,7 +66,7 @@ python3 -m http.server 4173 --directory /absolute/path/my-quiz
 5. 在实际手机宽度逐页截图；发现问题时只改被点名的图层，并保留其他已确认的位置。
 6. 最后分别确认结构、计分、视觉、交互、素材权利和隐私，而不是把它们混成一次“看起来没问题”。
 
-详细的 agent 协作说明在 [SKILL.md](SKILL.md)。设计与工作台架构、题目调研、计分、故障排查、QA 和模型兼容性说明在 [references/](references/)。
+详细的 agent 协作说明在 [SKILL.md](SKILL.md)。设计与工作台架构、题目调研、计分、故障排查、QA 和模型兼容性说明在 [references/](references/)；针对“工作台和正式页为什么不一样”、局部修改怎样不伤及整页的具体流程见 [对齐协议](references/alignment-protocol.md)。
 
 ## 范围与限制
 

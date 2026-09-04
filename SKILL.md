@@ -40,7 +40,7 @@ Read [intake-and-research.md](references/intake-and-research.md) before research
 8. Implement mobile-first pages, result/share cards, optional media, and analytics only after the quiz flow works.
 9. Perform the QA gates in [qa-and-release.md](references/qa-and-release.md). Do not say a page is accepted because its config validates.
 
-Read [architecture-and-workbench.md](references/architecture-and-workbench.md) before writing the UI. Read [failure-atlas.md](references/failure-atlas.md) before diagnosing an editor/render/export discrepancy. Read [model-portability.md](references/model-portability.md) when adapting this package to another agent platform.
+Read [architecture-and-workbench.md](references/architecture-and-workbench.md) before writing the UI. Read [alignment-protocol.md](references/alignment-protocol.md) before the first visual edit or whenever the workbench and formal page differ. Read [failure-atlas.md](references/failure-atlas.md) before diagnosing an editor/render/export discrepancy. Read [model-portability.md](references/model-portability.md) when adapting this package to another agent platform.
 
 Read [open-source-landscape.md](references/open-source-landscape.md) before adding a page-builder, canvas, or DOM-to-image dependency. Reuse one only when its product scope actually matches the request.
 
@@ -51,7 +51,9 @@ Read [open-source-landscape.md](references/open-source-landscape.md) before addi
 - Page height is independent from art width/height. Options, footer, progress, and safe areas have their own coordinates or flow rules; changing canvas height must not silently pin or hide them.
 - Art can move anywhere on its page. Do not confine it to a hard-coded corner. Select SVG by painted pixels where possible; transparent PNG padding is not the visible art boundary.
 - “WYSIWYG” means the workbench embeds the formal renderer and sends config updates to it. A look-alike preview is not acceptable.
+- The active config identity, canvas dimensions, viewport, transform origin, and draft/published status must be inspectable in both the workbench and the formal renderer. If they differ, stop moving layers and resolve the identity mismatch first.
 - Preserve user-approved coordinates. Fix only the named collision; never apply a global repositioning or typography normalization to existing pages without approval.
+- Bind answer, drag, and export callbacks to stable page/layer ids, not a mutable “current page” variable. Ignore a stale callback during a page transition so a tap, selected border, or edit cannot leak into the next screen.
 - Save/export must visibly succeed: generate a preview and a user-clickable download/share fallback. Do not silently trust a programmatic download after asynchronous rendering.
 - Mobile browsers cannot be forced to autoplay audible music. Start muted/off, require a user interaction to enable sound, and expose an accessible toggle.
 
